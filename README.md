@@ -32,6 +32,7 @@ key needed.
 The storyboard is the single source of truth: ask for a change in plain words and Claude edits it.
 
 **Install:** see [INSTALL.md](INSTALL.md) (claude.ai on the web or iPhone, or Claude Code on Mac, Linux, Windows).
+Big videos from your phone through Google Drive (Claude Code on the computer): [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md).
 Changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## Layout

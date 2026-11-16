@@ -2,6 +2,10 @@
 
 Versions go up by 0.1 per release (0.3 → 0.4 → 0.5…) unless a number is chosen. (0.2 was skipped.) `stable` always points at the latest release tag.
 
+## 1.0.3 — 2026-11-16
+- Guide for Google Drive from the iPhone, in Vietnamese: [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md) (update, check the version,
+  connect Drive, upload, list, download and edit).
+
 ## 1.0.2 — 2026-11-16
 - **Google Drive in / out** for Claude Code on your computer, so big videos can come from and go back to your
   phone through Drive: type `/nve setup-gg-drive` once while at the computer (sign in to Google in the browser),
