@@ -122,8 +122,7 @@ def cmd_style(a):
 
 
 def cmd_drive(a):
-    from nve import pro
-    drive = pro.load("drive", "Google Drive transfer (`nve drive`)")
+    from nve import drive
     if a.action == "status":
         out(drive.status())
         return
@@ -342,6 +341,18 @@ def cmd_where(a):
     out({"install_root": str(INSTALL_ROOT), "workspace": str(find_workspace() or ""), "version": __version__})
 
 
+def _drive_parser(sp) -> None:
+    from nve.env import detect_runtime
+    if detect_runtime() == "cloud":   # claude.ai: no browser login, no Drive transfer
+        return
+    p = sp.add_parser("drive", help="Google Drive in/out on this computer: setup (at the computer) / status / list / pull / push")
+    p.add_argument("action", choices=["setup", "status", "list", "pull", "push"])
+    p.add_argument("files", nargs="*", help="push: rendered files to upload")
+    p.add_argument("--file", action="append", help="pull: a file name in Drive nve/google-raw-input (repeatable)")
+    p.add_argument("--link", help="pull: one file by Drive share link")
+    p.set_defaults(fn=cmd_drive)
+
+
 def _pro_parsers(sp) -> None:
     p = sp.add_parser("ref", help="learn the style of a sample video (link or file); --clean deletes it afterwards")
     p.add_argument("project"); p.add_argument("source", nargs="?", help="Facebook / YouTube / TikTok link, or a video file")
@@ -352,15 +363,6 @@ def _pro_parsers(sp) -> None:
     p.add_argument("project", nargs="?", help="save / apply: the project; show: the style name")
     p.add_argument("name", nargs="?", help="style name (save: defaults to the name in style_dna.json)")
     p.set_defaults(fn=cmd_style)
-    from nve.env import detect_runtime
-    if detect_runtime() == "cloud":   # claude.ai: no browser login, no Drive transfer
-        return
-    p = sp.add_parser("drive", help="Google Drive in/out on this computer: setup (at the computer) / status / list / pull / push")
-    p.add_argument("action", choices=["setup", "status", "list", "pull", "push"])
-    p.add_argument("files", nargs="*", help="push: rendered files to upload")
-    p.add_argument("--file", action="append", help="pull: a file name in Drive nve/google-raw-input (repeatable)")
-    p.add_argument("--link", help="pull: one file by Drive share link")
-    p.set_defaults(fn=cmd_drive)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -382,6 +384,7 @@ def main(argv: list[str] | None = None) -> None:
     from nve import pro
     if pro.available():  # editions without these features do not show the commands at all
         _pro_parsers(sp)
+    _drive_parser(sp)  # every edition, Claude Code on the computer only
     p = sp.add_parser("shots", help="split videos into shots, score them, write contact sheets")
     p.add_argument("project"); p.set_defaults(fn=cmd_shots)
     p = sp.add_parser("plan", help="S3: draft or refresh the storyboard")
