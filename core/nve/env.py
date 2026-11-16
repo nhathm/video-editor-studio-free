@@ -95,9 +95,8 @@ def get_key(name: str, ws: Path | None) -> str | None:
 
 
 def detect_edition() -> dict:
-    """Public exports carry EDITION.json (tier standard/newbie; `resources`: models the edition may fetch from
-    its own mirror, Newbie only).
-    Without it: the private repo (has pro/) is Pro, anything else Standard."""
+    """The public Free export carries EDITION.json (tier free).
+    Without it: the private repo (has pro/) is Pro, anything else Free."""
     f = INSTALL_ROOT / "EDITION.json"
     if f.exists():
         try:
@@ -106,7 +105,7 @@ def detect_edition() -> dict:
                 return ed
         except (OSError, ValueError):
             pass
-    tier = "pro" if (PRO_ROOT / "LICENSES.json").exists() or (PRO_ROOT / "packs").is_dir() else "standard"
+    tier = "pro" if (PRO_ROOT / "LICENSES.json").exists() or (PRO_ROOT / "packs").is_dir() else "free"
     return {"tier": tier}
 
 
@@ -187,9 +186,6 @@ def doctor(ws: Path | None, refresh: bool = False, deep: bool = False) -> dict:
         captions.append("scribe")
     if reach("huggingface.co"):
         captions.append("whisper")
-    from importlib.util import find_spec
-    if "whisper-small" in (edition.get("resources") or []) and find_spec("nve.resources") and reach("github.com"):
-        captions.append("whisper-git")
     level = "L0" + ("+elevenlabs" if keys["elevenlabs"] else "") + ("+heygen" if heygen else "")
     data = {"nve_version": __version__, "checked_at": int(time.time()), "runtime": runtime,
             "install_root": str(INSTALL_ROOT), "workspace": str(ws) if ws else None,
@@ -223,11 +219,9 @@ def format_report(d: dict) -> str:
         if caps == []:
             # Typical of the claude.ai Free plan: only package hosts are reachable and domains cannot be added.
             lines.append("  -> no automatic captions here: paste the spoken words to make captions.")
-            if (d.get("edition") or {}).get("tier") == "standard":
+            if (d.get("edition") or {}).get("tier") != "pro":
                 lines.append("     (with Claude Pro you can allow the download hosts and get automatic captions)")
-        elif caps == ["whisper-git"]:
-            lines.append("  -> captions: whisper model from the GitHub mirror (Hugging Face blocked)")
-        if not all(v for h, v in net.items() if h != "github.com") and caps != ["whisper-git"]:
+        if not all(v for h, v in net.items() if h != "github.com"):
             lines.append("  -> Claude Pro or higher: Settings > Capabilities (web or desktop app) > Additional allowed domains: "
                          + ", ".join(ALLOWLIST_DOMAINS) + ". Account-wide; then start a new chat.")
     return "\n".join(lines)

@@ -1,5 +1,5 @@
-"""Bridge to the reference style features in <install>/pro/python/nve_pro (Pro and Newbie; Standard and Free
-do not ship them)."""
+"""Bridge to the reference style features in <install>/pro/python/nve_pro (Pro only; the
+Free edition does not ship them)."""
 from __future__ import annotations
 
 import importlib

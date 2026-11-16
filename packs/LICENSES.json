@@ -6,7 +6,7 @@
       "url": "https://pixabay.com/service/license-summary/",
       "source": "HyperFrames media-use bundle (vendor/hyperframes/skills/media-use/audio/assets/sfx), see packs/sfx/CREDITS.md",
       "attribution_required": false,
-      "tier": "standard"
+      "tier": "free"
     },
     "emoji-noto": {
       "license": "CC BY 4.0",
@@ -14,14 +14,14 @@
       "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/<codepoint>/lottie.json",
       "attribution_required": true,
       "attribution": "Emoji: Google Noto (CC BY 4.0)",
-      "tier": "standard"
+      "tier": "free"
     },
     "fonts": {
       "license": "SIL Open Font License 1.1",
       "url": "https://openfontlicense.org",
       "source": "github.com/google/fonts (ofl/), downloaded by `nve fonts sync`",
       "attribution_required": false,
-      "tier": "standard"
+      "tier": "free"
     },
     "bgm": {
       "license": "CC BY 4.0",
@@ -29,7 +29,7 @@
       "source": "Kevin MacLeod, incompetech.com (see packs/bgm/bgm.json)",
       "attribution_required": true,
       "attribution": "see packs/bgm/bgm.json credit_template",
-      "tier": "standard"
+      "tier": "free"
     }
   }
 }

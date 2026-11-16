@@ -482,7 +482,7 @@ def _render_plan(prj: Project, ctx: Ctx, cut_path: Path, scale: float = 1.0, per
         sbx["output"] = {**sb["output"], "width": int(sb["output"]["width"] * scale) // 2 * 2,
                          "height": int(sb["output"]["height"] * scale) // 2 * 2}
     words = json.loads(prj.p("work", "words.json").read_text())
-    tier = ctx.env.get("edition", {}).get("tier", "standard")
+    tier = ctx.env.get("edition", {}).get("tier", "free")
     return compose_plan.build(sbx, words, cut_path, duration(cut_path), prj.path, ctx.workspace, tier, person)
 
 

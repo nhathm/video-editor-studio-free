@@ -2,7 +2,7 @@
 """Build the claude.ai (cloud) skill zips from editions/*.json.
 
     python3 build/pack.py cloud-pro        -> dist/nve-cloud-pro-<version>.zip
-    python3 build/pack.py cloud-standard   -> dist/nve-cloud-standard-<version>.zip
+    python3 build/pack.py cloud-free       -> dist/nve-cloud-free-<version>.zip
 
 The zip holds ONE folder `nve/` that is self-contained: SKILL.md + references + bin at its root, and the
 engine and data next to them (core/nve, templates, blocks, packs, engines.json [, pro]). nve's
@@ -52,11 +52,11 @@ def build(edition: str) -> Path:
         copy(ROOT / item, skill / item)
     if ed["tier"] == "pro":
         copy(ROOT / "pro", skill / "pro")
-    # leak check for Standard
+    # leak check for Free
     if ed["tier"] != "pro":
         bad = [p for p in skill.rglob("*") if p.is_file() and ("pro/" in str(p.relative_to(skill)) or p.name == ".env")]
         if bad:
-            sys.exit(f"Standard bundle would contain private files: {bad[:5]}")
+            sys.exit(f"Free bundle would contain private files: {bad[:5]}")
     (skill / "EDITION.json").write_text(json.dumps({"edition": edition, "tier": ed["tier"], "version": version()}, indent=2))
     zpath = ROOT / "dist" / f"nve-{edition}-{version()}.zip"
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:

@@ -1,7 +1,7 @@
 {
-  "edition": "local-standard",
+  "edition": "local-free",
   "runtime": "local",
-  "tier": "standard",
+  "tier": "free",
   "include": ["core/nve", "skills/nve", "templates/core", "blocks/core", "packs", "engines.json"],
   "exclude": ["core/tests", "**/__pycache__"]
 }

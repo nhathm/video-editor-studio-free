@@ -2,6 +2,10 @@
 
 Versions go up by 0.1 per release (0.3 → 0.4 → 0.5…) unless a number is chosen. (0.2 was skipped.) `stable` always points at the latest release tag.
 
+## 1.0.1 — 2026-11-16
+- The skill reads extra guides shipped with the install, when there are any.
+- Whisper models come from Hugging Face only.
+
 ## 1.0.0 — 2026-11-16 · first official release
 
 nve 1.0 is the first release we call finished: an AI editor inside Claude that takes raw clips to a ready-to-post

@@ -1,7 +1,7 @@
 {
-  "edition": "cloud-standard",
+  "edition": "cloud-free",
   "runtime": "cloud",
-  "tier": "standard",
+  "tier": "free",
   "include": ["core/nve", "skills/nve", "templates/core", "blocks/core", "packs", "engines.json"],
   "exclude": ["core/tests", "**/__pycache__", "hooks", ".claude-plugin"]
 }

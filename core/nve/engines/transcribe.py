@@ -37,14 +37,6 @@ def _multipart(fields: dict[str, str], file_field: str, file_path: Path) -> tupl
 
 
 
-def model_mirror():
-    """nve.resources when this edition ships it (Newbie only), else None."""
-    try:
-        from nve import resources
-    except ImportError:
-        return None
-    return resources
-
 class Scribe(Engine):
     id, capability = "scribe", "transcribe"
 
@@ -133,7 +125,7 @@ class FasterWhisper(Engine):
 
     def available(self, ctx: Ctx) -> tuple[bool, str]:
         # Only a check: never installs here (`nve engines` / doctor must not change the venv).
-        blocked, _ = self._model_source(ctx)
+        blocked = self._model_blocked(ctx)
         if blocked:
             return False, blocked
         try:
@@ -146,17 +138,13 @@ class FasterWhisper(Engine):
         return True, "not installed yet: pip-installed on first use"
 
     @staticmethod
-    def _model_source(ctx: Ctx) -> tuple[str | None, bool]:
-        """(why unavailable, may use the mirror). The model comes from Hugging Face; only an edition that ships a
-        model mirror (module nve.resources, Newbie) can also fetch it from git."""
-        resources = model_mirror()
-        net = ctx.env.get("network") or {}
-        mirror = resources is not None and "whisper-small" in ((ctx.env.get("edition") or {}).get("resources") or [])
-        if os.environ.get("NVE_WHISPER_MODEL") or (mirror and resources.is_cached("whisper-small")):
-            return None, mirror
-        if net.get("huggingface.co") is False and not (mirror and net.get("github.com", True)):
-            return "whisper model download blocked (huggingface.co)", mirror
-        return None, mirror
+    def _model_blocked(ctx: Ctx) -> str | None:
+        """Why the model cannot be fetched (it comes from Hugging Face), else None."""
+        if os.environ.get("NVE_WHISPER_MODEL"):
+            return None
+        if (ctx.env.get("network") or {}).get("huggingface.co") is False:
+            return "whisper model download blocked (huggingface.co)"
+        return None
 
     @staticmethod
     def _install() -> None:
@@ -206,30 +194,16 @@ class FasterWhisper(Engine):
 
 
     def _load_model(self, WhisperModel, ctx: Ctx):
-        resources = model_mirror()
         load = lambda src: WhisperModel(src, device="cpu", compute_type="int8")  # noqa: E731
-        _, mirror = self._model_source(ctx)
         name = os.environ.get("NVE_WHISPER_MODEL")
         if name:
             return load(name)
-        if mirror and resources.is_cached("whisper-small"):
-            return load(str(resources.cache_dir("whisper-small")))
-        hf_blocked = (ctx.env.get("network") or {}).get("huggingface.co") is False
-        if not hf_blocked:
-            try:
-                return retry_once(lambda: load("small"), "whisper model download (Hugging Face)")
-            except Exception as e:  # noqa: BLE001
-                if not mirror:
-                    raise EngineUnavailable(f"model download failed twice ({str(e)[:120]}; {ALLOWLIST_HINT})") from e
-                log(f"Hugging Face download failed ({str(e)[:80]}); using the model mirror on GitHub")
-        if not mirror:
+        if (ctx.env.get("network") or {}).get("huggingface.co") is False:
             raise EngineUnavailable("whisper model download blocked (huggingface.co)")
         try:
-            d = resources.fetch("whisper-small")
-        except NveError as e:
-            raise EngineUnavailable(str(e)) from e
-        os.environ["NVE_WHISPER_MODEL"] = str(d)
-        return load(str(d))
+            return retry_once(lambda: load("small"), "whisper model download (Hugging Face)")
+        except Exception as e:  # noqa: BLE001
+            raise EngineUnavailable(f"model download failed twice ({str(e)[:120]}; {ALLOWLIST_HINT})") from e
 
 
 def wav_float32(path: Path):
